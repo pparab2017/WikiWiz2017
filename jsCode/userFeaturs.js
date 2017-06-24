@@ -1,0 +1,139 @@
+
+function millisToMinutesAndSeconds(millis) {
+  var minutes = Math.ceil(millis / 6000);
+  return minutes;
+}
+
+var metaPages =[];
+function featureOne(data)
+{
+ var users = d3.nest()
+        .key(function(d) { return d.username; })
+        .key(function(d) { return d.pagetitle; })
+        .entries(data);
+ //console.log(users);
+
+	 for(var i= 0;i<users.length;i++)
+	 {
+	 	var userPages = users[i].values; // get all pages for the users
+	 	var metaPageObj = null;
+	 	users[i].timeG15 = 0;
+	 	users[i].timeL3 = 0;
+	 	users[i].timeG3L15 = 0;
+
+	 	users[i].noOfMetaPages = 0;
+	 	users[i].noOfNonMetaPages = 0;
+        users[i].color =  users[i].values[0].values[0].color;
+
+	 	users[i].mtimeG15 = 0;
+	 	users[i].mtimeL3 = 0;
+	 	users[i].mtimeG3L15 = 0;
+
+	 	for(var j =0; j<userPages.length; j++)
+	 	{
+	 		var pageEdits = userPages[j].values;
+	 		var page = userPages[j].key;
+	 		
+	 		for(var k = 0; k<pageEdits.length - 1 ; k++)
+	 		{
+	 			//console.log(pageEdits);
+	 			var curr_edit_time = new Date(pageEdits[k].revtime).getTime();
+	 			var next_edit_time = new Date(pageEdits[k+1].revtime).getTime();
+
+	 			var timeDiff = next_edit_time - curr_edit_time;
+	 			var timeDiff = millisToMinutesAndSeconds(timeDiff);
+	 			
+	 			// All pages
+	 			
+	 			if(timeDiff <= (3*60))
+	 			{
+	 				users[i].timeL3 = users[i].timeL3  + 1;
+	 			}
+	 			else if(timeDiff >= (3*60) & timeDiff <= (15*60))
+	 			{
+	 				users[i].timeG3L15 = users[i].timeG3L15 + 1;
+	 			}
+	 			else if(timeDiff >= (15*60))
+	 			{
+	 				users[i].timeG15 = users[i].timeG15 + 1;
+	 			}
+
+	 		}
+	 		/*
+	 			-- talk: user: Wikipedia: Template: Category talk: Category: Command: Daft: 
+ 				-- File: Book: Portal
+ 				indexOf("Talk") >= 0 
+	 			*/
+	 			// Meta Pages
+
+	 			if(page.toLowerCase().indexOf("talk:") >= 0
+	 				| page.toLowerCase().indexOf("user:") >= 0
+	 				| page.toLowerCase().indexOf("wikipedia:") >= 0
+	 				| page.toLowerCase().indexOf("template:") >= 0
+	 				| page.toLowerCase().indexOf("category:") >= 0
+	 				| page.toLowerCase().indexOf("command:") >= 0
+	 				| page.toLowerCase().indexOf("daft:") >= 0
+	 				| page.toLowerCase().indexOf("book:") >= 0
+	 				| page.toLowerCase().indexOf("file:") >= 0
+	 				)
+	 			{
+
+	 				users[i].noOfMetaPages = users[i].noOfMetaPages + 1;
+
+	 				//console.log(page);
+
+					for(var k = 0; k<pageEdits.length - 1 ; k++)
+					{
+						//console.log(pageEdits);
+						var curr_edit_time = new Date(pageEdits[k].revtime).getTime();
+						var next_edit_time = new Date(pageEdits[k+1].revtime).getTime();
+
+						var timeDiff = next_edit_time - curr_edit_time;
+						var timeDiff = millisToMinutesAndSeconds(timeDiff);
+
+					
+
+						if(timeDiff <= (3*60))
+						{
+							users[i].mtimeL3 = users[i].mtimeL3  + 1;
+						}
+						else if(timeDiff >= (3*60) & timeDiff <= (15*60))
+						{
+							users[i].mtimeG3L15 = users[i].mtimeG3L15 + 1;
+						}
+						else if(timeDiff >= (15*60))
+						{
+							users[i].mtimeG15 = users[i].mtimeG15 + 1;
+						}
+
+					}
+					metaPageObj = users[i];
+					//metaPages.push(users[i]);
+	 			}
+	 			else
+	 			{
+	 				users[i].noOfNonMetaPages = users[i].noOfNonMetaPages + 1;
+	 			}
+
+	 			// Non meta pages
+	 		
+	 	}
+	 	if(metaPageObj!= null)
+	 	metaPages.push(metaPageObj);
+	 }
+
+     //console.log(metaPages);
+	 return {"sc_1": users, "sc_2":metaPages};
+}
+
+
+
+function zeros(dimensions) {
+    var array = [];
+
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length == 1 ? 0 : zeros(dimensions.slice(1)));
+    }
+
+    return array;
+}

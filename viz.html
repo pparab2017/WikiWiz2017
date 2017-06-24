@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<head>
+<title>Wiki Visualisation Page</title>
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="css/mysite.css">
+
+<!--Scripts Refferences-->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript" src="http://d3js.org/d3.v4.min.js"></script>
+<script src="js/numeric-1.2.6.js"></script>
+<script src="js/jsfeat.js"></script>
+<script src="js/d3-lasso.min.js"></script>
+
+<script src="http://mlweb.loria.fr/lalolib.js"></script>
+
+<!--JS Code files -->
+<script src="jsCode/userFeaturs.js"></script>
+<script src="jsCode/scatterPlot.js"></script>
+<script src="jsCode/timeLine.js"></script>
+<script src="jsCode/heatMap.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+	$.ajax({
+		type: 'POST',
+		url: 'DataAccess/userDB.php',
+		//data: {  "fromDate": "8" },
+		success: function(data) {
+			var data = featureOne(JSON.parse(data));
+			//console.log(data);
+			ScatterPlot(data.sc_1,"scatterPlot_1", "crsVsCrv");
+			ScatterPlot(data.sc_1,"scatterPlot_2", "CrnVsCrm");
+			ScatterPlot(data.sc_1,"scatterPlot_3", "CrsVsCrvs");
+			ScatterPlot(data.sc_2,"scatterPlot_4", "CrsmVsCrvm");
+			setTheTimeLine();
+			
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+        	console.log('Error: ' + errorThrown);
+        },
+		complete: function() {
+		}
+	});
+});
+
+
+function getCorrectDateFormat(date)
+{
+ var date = new Date(date);
+  
+  var year  = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var dateTime = date.getDate();
+  return ( year + "-" + month +"-" + dateTime );
+}
+
+function GenerateScatterPlot(data)
+{
+ 
+$("#scatterPlot").remove();
+$("#scatterPlotContainer").append("<div id='scatterPlot'><table><tr><td><div id='scatterPlot_1' class='scatterPlot'></div></td><td><div id='scatterPlot_2' class='scatterPlot'></div></td><td><div id='scatterPlot_3' class='scatterPlot'></div></td><td><div id='scatterPlot_4' class='scatterPlot'></div></td></tr></table></div>");
+
+
+
+$.ajax({
+		type: 'POST',
+		url: 'DataAccess/userDB.php',
+		data: {  "fromDate": getCorrectDateFormat(data.from) ,"toDate": getCorrectDateFormat(data.to) },
+		success: function(data) {
+			var data = featureOne(JSON.parse(data));
+			//console.log(data);
+			ScatterPlot(data.sc_1,"scatterPlot_1", "crsVsCrv");
+			ScatterPlot(data.sc_1,"scatterPlot_2", "CrnVsCrm");
+			ScatterPlot(data.sc_1,"scatterPlot_3", "CrsVsCrvs");
+			ScatterPlot(data.sc_2,"scatterPlot_4", "CrsmVsCrvm");
+			//setTheTimeLine();
+			
+		},
+		error: function(jqXHR, textStatus, errorThrown){
+        	console.log('Error: ' + errorThrown);
+        },
+		complete: function() {
+		}
+	});
+
+}
+
+
+
+</script>
+</head>
+
+
+
+
+
+<body>
+<div style="width:100%; overflow-x:scroll" id="scatterPlotContainer">
+
+<div id="scatterPlot">
+<table>
+	<tr>
+	<td><div id="scatterPlot_1" class="scatterPlot"></div></td>
+	<td><div id="scatterPlot_2" class="scatterPlot"></div></td>
+	<td><div id="scatterPlot_3" class="scatterPlot"></div></td>
+	<td><div id="scatterPlot_4" class="scatterPlot"></div></td>
+	</tr>
+</table>
+</div>
+
+
+
+
+ </div>
+ <div id="heatMapContainer">
+ 	<div id="heatMap">
+</div> 
+ </div>
+
+
+<div style="float:left" id="test"> </div>
+<div style="float:left"><button > hello</button></div>
+
+
+</body>
