@@ -12,8 +12,9 @@ class User
 	var $isReverted;
 	var $revertTime;
 	var $color;
+	var $pageCategory;
 
-	function __construct($username,$revtime,$pagetitle,$isReverted,$revertTime,$color)
+	function __construct($username,$revtime,$pagetitle,$isReverted,$revertTime,$color,$pageCategory)
 	{
 		$this->username = $username;
 		$this->revtime = $revtime;
@@ -21,6 +22,7 @@ class User
 		$this->isReverted = $isReverted;
 		$this->revertTime = $revertTime;
 		$this->color = $color;
+		$this->pageCategory = $pageCategory;
 	}
 
 

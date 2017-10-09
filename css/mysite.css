@@ -39,7 +39,7 @@
 
 
         .axis--grid .domain {
-  fill: #DCEDC8;
+  fill: #ddd;
   stroke: none;
 }
 
@@ -51,4 +51,25 @@
 
 .axis--grid .tick--minor line {
   stroke-opacity: .5;
+}
+
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.cells path {
+    fill: none;
+    pointer-events: all;
+}
+
+.cells :hover circle {
+    fill: red;
 }
