@@ -2,11 +2,11 @@ function setTheTimeLine()
 {
 
 var margin = {top: 20, right: 40, bottom: 20, left: 40},
-    width = 1200 - margin.left - margin.right,
+    width = 1270 - margin.left - margin.right,
     height = 60 - margin.top - margin.bottom;
 
 var x = d3.scaleTime()
-    .domain([new Date(2005, 1, 1), new Date(2014, 12, 31) ])
+    .domain([new Date(2012, 1, 1), new Date(2014, 12, 31) ])
     .rangeRound([0, width]);
 
 var svg = d3.select("#test").append("svg")

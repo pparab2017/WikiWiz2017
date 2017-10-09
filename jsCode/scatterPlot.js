@@ -1,17 +1,31 @@
 
 var selectUsers = [];
 
+var dw = 200;
+var dh = 200;
 
-function ScatterPlot(data, divId, Scase)
+function ScatterPlot(data, divId, Scase, w,h)
 {
+
+
+    data.forEach(function(d1) {
+        d1.timeG15 = +d1.timeG15;
+        d1.timeL3 = +d1.timeL3;
+        d1.noOfNonMetaPages = +d1.noOfNonMetaPages;
+        d1.noOfMetaPages = +d1.noOfMetaPages;
+        d1.mtimeL3 = +d1.mtimeL3;
+        d1.mtimeG15 = +d1.mtimeG15;
+        d1.timeG3L15 = +d1.timeG3L15;
+    });
+
 
   selectUsers = [];
 var divId =  "#" + divId;
 
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 200 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
+    width = w - margin.left - margin.right,
+    height = h - margin.top - margin.bottom;
 
 
 // set the ranges
@@ -35,7 +49,7 @@ var svg = d3.select(divId).append("svg")
       .attr("dy", "1em")
       .style("text-anchor", "middle")
       .style("font-size","10")
-      .text("Value");
+      .text(GetPlotLabels(Scase,"y"));
 
 
  g.append("text")             
@@ -44,7 +58,9 @@ var svg = d3.select(divId).append("svg")
                            (height + margin.top + 10) + ")")
       .style("text-anchor", "middle")
       .style("font-size","10")
-      .text("Date");
+      .text(GetPlotLabels(Scase,"x"));
+
+
 
 
   // Scale the range of the data
@@ -57,15 +73,19 @@ var svg = d3.select(divId).append("svg")
       .data(data)
       .enter().append("circle")
       .attr("r", 1)
-      .attr("cx", function(d) { return x(d.noOfNonMetaPages); })
-      .attr("cy", function(d) { return y(d.noOfMetaPages); })
+      .attr("cx", function(d) { return x(GetRightPlot(d,Scase,"x")); })
+      .attr("cy", function(d) { return y(GetRightPlot(d,Scase,"y")); })
+      .attr("class", function (d) {
+          if(d.color == "#F6B67F")
+          {
+              return "benignUser";
+          }
+          else
+          {
+              return "vandalUser";
+          }
+      })
       .style("fill", function(d) { return ("" + d.color + ""); });
-
-
-
-
-
-
 
 
 var lasso_start = function() {
@@ -111,7 +131,8 @@ for(var i=0;i<seletedPoints.length; i++)
 	selectUsers.push(lasso.selectedItems()._groups[0][i].__data__);
 
 }
-
+console.log("selected users ------------->");
+console.log(selectUsers);
 heatMap(selectUsers);
 
 
@@ -156,20 +177,66 @@ for(var i = 0;i < seletedPoints.length;i++ )
 
 }
 
-function GetAxisLabels(scase,axis)
-{
+
+
+
+function  GetPlotLabels(scase,axis) {
+
+    switch(scase)
+    {
+        case "crsVsCrv":
+
+
+
+            if(axis == "x")
+                return "Crs";
+            else
+                return "Crv";
+            break;
+
+        case "CrnVsCrm":
+            if(axis == "x")
+                return "Crn";
+            else
+                return "Crm";
+            break;
+        case "CrsVsCrvs":
+            if(axis == "x")
+                return "Crs";
+            else
+                return "Crvs";
+            break;
+        case "CrsmVsCrvm":
+            if(axis == "x")
+                return "Crsm";
+            else
+                return "Crvm";
+            break;
+        case "EditsVsReverts":
+        if(axis == "x")
+            return "Edits";
+        else
+            return "Reverts";
+        break;
+        case "crvsVsCrs":
+            if(axis == "x")
+                return "Crvs";
+            else
+                return "Crs";
+            break;
+
+    }
 
 }
-
-
-
-
 
 function GetRightPlot(d,scase,axis)
 {
 	switch(scase)
 	{
 		case "crsVsCrv":
+
+
+
 			if(axis == "x")
 				return d.timeG15;
 			else
@@ -194,6 +261,19 @@ function GetRightPlot(d,scase,axis)
 			else
 				return d.mtimeG15;
 			break;
+        case "EditsVsReverts":
+            if(axis == "x")
+                return d.numOfGoodEdits;
+            else
+                return d.numOfBadEdits;
+            break;
+
+        case "crvsVsCrs":
+            if(axis == "x")
+                return d.timeG15;
+            else
+                return d.timeG3L15;
+            break;
 
 
 	}

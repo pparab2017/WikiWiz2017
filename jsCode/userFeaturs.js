@@ -11,12 +11,15 @@ function featureOne(data)
         .key(function(d) { return d.username; })
         .key(function(d) { return d.pagetitle; })
         .entries(data);
- //console.log(users);
 
+
+
+var userToReturn = [];
 	 for(var i= 0;i<users.length;i++)
 	 {
 	 	var userPages = users[i].values; // get all pages for the users
 	 	var metaPageObj = null;
+
 	 	users[i].timeG15 = 0;
 	 	users[i].timeL3 = 0;
 	 	users[i].timeG3L15 = 0;
@@ -29,11 +32,16 @@ function featureOne(data)
 	 	users[i].mtimeL3 = 0;
 	 	users[i].mtimeG3L15 = 0;
 
+	 	users[i].numOfGoodEdits = 0;
+	 	users[i].numOfBadEdits = 0;
+
+	 	var isEditAboveTH = false;
 	 	for(var j =0; j<userPages.length; j++)
 	 	{
 	 		var pageEdits = userPages[j].values;
 	 		var page = userPages[j].key;
-	 		
+
+
 	 		for(var k = 0; k<pageEdits.length - 1 ; k++)
 	 		{
 	 			//console.log(pageEdits);
@@ -44,6 +52,14 @@ function featureOne(data)
 	 			var timeDiff = millisToMinutesAndSeconds(timeDiff);
 	 			
 	 			// All pages
+
+				if(pageEdits[k].isReverted == "True")
+				{
+                    users[i].numOfBadEdits = users[i].numOfBadEdits +1;
+				}else
+				{
+                    users[i].numOfGoodEdits = users[i].numOfGoodEdits +1;
+				}
 	 			
 	 			if(timeDiff <= (3*60))
 	 			{
@@ -107,7 +123,7 @@ function featureOne(data)
 						}
 
 					}
-					metaPageObj = users[i];
+					//metaPageObj = users[i];
 					//metaPages.push(users[i]);
 	 			}
 	 			else
@@ -115,15 +131,27 @@ function featureOne(data)
 	 				users[i].noOfNonMetaPages = users[i].noOfNonMetaPages + 1;
 	 			}
 
+
 	 			// Non meta pages
 	 		
 	 	}
-	 	if(metaPageObj!= null)
-	 	metaPages.push(metaPageObj);
-	 }
 
-     //console.log(metaPages);
-	 return {"sc_1": users, "sc_2":metaPages};
+	 	//alert(min_edits);
+	 	if(users[i].numOfGoodEdits > min_edits)
+            userToReturn.push(users[i]);
+	 	//if(metaPageObj!= null)
+	 	//metaPages.push(metaPageObj);
+	 }
+console.log("000000-------000000000000------------------0--->")
+    userToReturn.sort(function(x, y){
+        return d3.ascending(x.key, y.key);
+    });
+    console.log("<-----------users------------------------->");
+
+     console.log({"sc_1": users, "sc_2":metaPages});
+	 //console.log(metaPages);
+	 return {"sc_1": userToReturn, "sc_2":metaPages};
+
 }
 
 
