@@ -1,5 +1,7 @@
 <?php
-ini_set('memory_limit','4024M');
+ini_set('memory_limit','8024M');
+ini_set("display_errors",0);
+
 
 require("../Entity/user.php");
 require("../Util/Utils.php");
@@ -64,7 +66,7 @@ SELECT username,revtime,p.pagetitle,isReverted,revertTime,'#000' as color,p.page
 					$itemsData[] = $toAdd;
 		    }
 		}
-		return json_encode($itemsData);
+		return json_encode( utf8ize($itemsData));
 	}
 	catch( Exception $e)
 	{
@@ -78,7 +80,9 @@ function GetRequestedUsersTest()
 {
 	$conn = Utils::getConnectionObject();
 	if (!$conn) {
+		echo "die";
 	    die("Connection failed: " . mysqli_connect_error());
+
 	}
 
 	try{
@@ -90,19 +94,42 @@ function GetRequestedUsersTest()
 	";
 	$result = $conn->query($sql);
 	$itemsData = array();
-		if ($result->num_rows > 0) {
+	$toReturn = "[";
+			if ($result->num_rows > 0) {
 		    while($row = $result->fetch_assoc()) {
 		    		$toAdd = new user($row["username"],$row["revtime"],$row["pagetitle"],$row["isReverted"],$row["revertTime"],$row["color"],$row["pagecategories"]);
-					$itemsData[] = $toAdd;
+		    		$itemsData[] = $toAdd;
+		    		$toAdd = json_encode($toAdd);
+					$toReturn = $toReturn . $toAdd . ",";
+
 		    }
 		}
-		return json_encode($itemsData);
+		//echo json_encode($itemsData[0]);
+		//$toReturn = $toReturn . "]";
+		//echo json_encode (utf8ize($itemsData[117]));
+
+		return json_encode( utf8ize($itemsData));
 	}
 	catch( Exception $e)
 	{
 		return json_encode($e);
 	}
 	$conn->close();
+}
+
+function utf8ize($d) {
+    if (is_array($d)) 
+        foreach ($d as $k => $v) 
+            $d[$k] = utf8ize($v);
+
+     else if(is_object($d))
+        foreach ($d as $k => $v) 
+            $d->$k = utf8ize($v);
+
+     else 
+        return utf8_encode($d);
+
+    return $d;
 }
 
 ?>
